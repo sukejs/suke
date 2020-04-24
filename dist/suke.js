@@ -1,5 +1,5 @@
 /*
- * suke
+ * sukejs
  * (c) 2011-2020 suke
  * https://github.com/sukejs
  * version 0.0.1

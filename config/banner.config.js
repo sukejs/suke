@@ -1,7 +1,7 @@
-import pack from './package.json';
+import pack from '../package.json';
 
 export default `/*
- * suke
+ * sukejs
  * (c) 2011-2020 suke
  * https://github.com/sukejs
  * version ${pack.version}

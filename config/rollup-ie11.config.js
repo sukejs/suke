@@ -1,10 +1,11 @@
+/* cSpell:disable */
 import babel from 'rollup-plugin-babel';
 import filesize from 'rollup-plugin-filesize';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import multi from '@rollup/plugin-multi-entry';
 import replace from '@rollup/plugin-replace';
-import banner from '../suke/banner.config';
+import banner from './banner.config';
 
 export default {
   input: ['src/polyfills.js', 'src/index.js'],
