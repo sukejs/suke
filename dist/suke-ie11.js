@@ -2821,6 +2821,17 @@
 
 	var _this = undefined;
 
+	/**
+	 * https://github.com/jsdom/jsdom/issues/1537
+	 */
+	function isInJsdom() {
+	  return navigator.userAgent.includes('Node.js') || navigator.userAgent.includes('jsdom');
+	}
+	/**
+	 * More domReady
+	 * https://github.com/ded/domready
+	 */
+
 	var domReady = function domReady() {
 	  var _this2 = this;
 
@@ -2835,31 +2846,26 @@
 	      resolve();
 	    }
 	  }.bind(this));
-	}.bind(undefined); // https://github.com/jsdom/jsdom/issues/1537
-
-	function isTesting() {
-	  return navigator.userAgent.includes('Node.js') || navigator.userAgent.includes('jsdom');
-	}
+	}.bind(undefined);
 
 	var Component = function Component(el) {
 
 	  _classCallCheck(this, Component);
 
 	  this.$el = el;
-	  console.log(el);
 	};
 
 	var _this3 = undefined;
 	var suke = {
-	  start: function () {
-	    var _start = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+	  init: function () {
+	    var _init = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
 	      var _this = this;
 
 	      return regeneratorRuntime.wrap(function _callee$(_context) {
 	        while (1) {
 	          switch (_context.prev = _context.next) {
 	            case 0:
-	              if (isTesting()) {
+	              if (isInJsdom()) {
 	                _context.next = 3;
 	                break;
 	              }
@@ -2868,27 +2874,31 @@
 	              return domReady();
 
 	            case 3:
-	              suke.discoverComponents(function (el) {
+	              suke.findComponents(function (el) {
 	                _newArrowCheck(this, _this);
 
-	                suke.initializeComponent(el);
-	              }.bind(this)); // turbolinks: https://www.npmjs.com/package/turbolinks
+	                suke.initComponent(el);
+	              }.bind(this));
+	              /**
+	               * User navigates using Turbolinks
+	               * turbolinks: https://www.npmjs.com/package/turbolinks
+	               */
 
 	              document.addEventListener('turbolinks:load', function () {
 	                var _this2 = this;
 
 	                _newArrowCheck(this, _this);
 
-	                suke.discoverUninitializedComponents(function (el) {
+	                suke.findTurboComponents(function (el) {
 	                  _newArrowCheck(this, _this2);
 
-	                  suke.initializeComponent(el);
+	                  suke.initComponent(el);
 	                }.bind(this));
 	              }.bind(this));
-	              suke.listenForNewUninitializedComponentsAtRunTime(function (el) {
+	              suke.watchTurboComponents(function (el) {
 	                _newArrowCheck(this, _this);
 
-	                suke.initializeComponent(el);
+	                suke.initComponent(el);
 	              }.bind(this));
 
 	            case 6:
@@ -2899,29 +2909,29 @@
 	      }, _callee, this);
 	    }));
 
-	    function start() {
-	      return _start.apply(this, arguments);
+	    function init() {
+	      return _init.apply(this, arguments);
 	    }
 
-	    return start;
+	    return init;
 	  }(),
-	  discoverComponents: function discoverComponents(callback) {
+	  findComponents: function findComponents(callback) {
 	    var _this4 = this;
 
 	    _newArrowCheck(this, _this3);
 
-	    var rootEls = document.querySelectorAll('[x-data]');
+	    var rootEls = document.querySelectorAll('[k-data]');
 	    rootEls.forEach(function (rootEl) {
 	      _newArrowCheck(this, _this4);
 
 	      callback(rootEl);
 	    }.bind(this));
 	  }.bind(undefined),
-	  discoverUninitializedComponents: function discoverUninitializedComponents(callback) {
+	  findTurboComponents: function findTurboComponents(callback) {
 	    var _this5 = this;
 
 	    var el = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-	    var rootEls = (el || document).querySelectorAll('[x-data]');
+	    var rootEls = (el || document).querySelectorAll('[k-data]');
 	    Array.from(rootEls).filter(function (el) {
 	      _newArrowCheck(this, _this5);
 
@@ -2932,7 +2942,7 @@
 	      callback(rootEl);
 	    }.bind(this));
 	  },
-	  listenForNewUninitializedComponentsAtRunTime: function listenForNewUninitializedComponentsAtRunTime(callback) {
+	  watchTurboComponents: function watchTurboComponents(callback) {
 	    var _this6 = this;
 
 	    var targetNode = document.querySelector('body');
@@ -2940,7 +2950,11 @@
 	      childList: true,
 	      attributes: true,
 	      subtree: true
-	    }; // https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver
+	    };
+	    /**
+	     * MutationObserver Api
+	     * https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver
+	     */
 
 	    var observer = new MutationObserver(function (mutations) {
 	      var _this7 = this;
@@ -2955,11 +2969,11 @@
 	            _newArrowCheck(this, _this7);
 
 	            if (node.nodeType !== 1) return;
-	            if (node.parentElement && node.parentElement.closest('[x-data]')) return;
-	            this.discoverUninitializedComponents(function (el) {
+	            if (node.parentElement && node.parentElement.closest('[k-data]')) return;
+	            suke.findTurboComponents(function (el) {
 	              _newArrowCheck(this, _this8);
 
-	              this.initializeComponent(el);
+	              suke.initComponent(el);
 	            }.bind(this), node.parentElement);
 	          }.bind(this));
 	        }
@@ -2967,21 +2981,25 @@
 	    }.bind(this));
 	    observer.observe(targetNode, observerOptions);
 	  },
-	  initializeComponent: function initializeComponent(el) {
-	    if (!el.__x) {
-	      el.__x = new Component(el);
+	  initComponent: function initComponent(el) {
+	    _newArrowCheck(this, _this3);
+
+	    if (!el.__k) {
+	      el.__k = new Component(el);
 	    }
-	  },
+	  }.bind(undefined),
 	  clone: function clone(component, newEl) {
-	    if (!newEl.__x) {
-	      newEl.__x = new Component(newEl, component.getUnobservedData());
+	    _newArrowCheck(this, _this3);
+
+	    if (!newEl.__k) {
+	      newEl.__k = new Component(newEl, component.getUnTurboData());
 	    }
-	  }
+	  }.bind(undefined)
 	};
 
-	if (!isTesting()) {
+	if (!isInJsdom()) {
 	  window.suke = suke;
-	  window.suke.start();
+	  window.suke.init();
 	}
 
 })));

@@ -65,8 +65,8 @@ const suke = {
 
             if (node.parentElement && node.parentElement.closest('[k-data]')) return;
 
-            this.findTurboComponents((el) => {
-              this.initComponent(el);
+            suke.findTurboComponents((el) => {
+              suke.initComponent(el);
             }, node.parentElement);
           });
         }
