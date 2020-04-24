@@ -11,7 +11,13 @@
     "watch": "rollup -c -w",
     "build": "concurrently \"rollup -c config/rollup.config.js\" \"npx rollup -c config/rollup-ie11.config.js\"",
     "test": "npx jest",
-    "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
+    "lint": "npm run eslint && npm run prettier",
+    "fix": "npm run eslint:fix && npm run prettier:fix",
+    "eslint": "eslint ./src --ext .js",
+    "eslint:fix": "eslint ./src --ext .js --fix",
+    "prettier": "prettier -l \"./**/*.{js,json}\"",
+    "prettier:fix": "prettier --write -l \"./**/*.{js,json}\""
   },
   "author": "vsuke",
   "license": "MIT",
@@ -38,6 +44,7 @@
     "jest": "^25.1.0",
     "jsdom-simulant": "^1.1.2",
     "observable-membrane": "^0.26.1",
+    "prettier": "^2.0.5",
     "proxy-polyfill": "^0.3.1",
     "rollup": "^1.32.1",
     "rollup-plugin-babel": "^4.4.0",
