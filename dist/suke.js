@@ -31,10 +31,19 @@
       }
     });
   };
+  function saferEval(expression, dataContext, additionalHelperVariables = {}) {
+    // eslint-disable-next-line no-new-func
+    return new Function(['$data', ...Object.keys(additionalHelperVariables)], `var result; with($data) { result = ${expression} }; return result`)(dataContext, ...Object.values(additionalHelperVariables));
+  }
 
   class Component {
     constructor(el, seedData = null) {
       this.$el = el;
+      const dataAttr = this.$el.getAttribute('k-data');
+      const dataExpression = dataAttr === '' ? '{}' : dataAttr; // const initExpression = this.$el.getAttribute('x-init');
+
+      this.unobservedData = seedData ? seedData : saferEval(dataExpression, {});
+      console.log(this.unobservedData);
     }
 
   }
@@ -68,13 +77,13 @@
         callback(rootEl);
       });
     },
-    findTurboComponents: function (callback, el = null) {
+    findTurboComponents: function findTurboComponents(callback, el = null) {
       const rootEls = (el || document).querySelectorAll('[k-data]');
       Array.from(rootEls).filter(el => el.__x === undefined).forEach(rootEl => {
         callback(rootEl);
       });
     },
-    watchTurboComponents: function (callback) {
+    watchTurboComponents: function watchTurboComponents(callback) {
       const targetNode = document.querySelector('body');
       const observerOptions = {
         childList: true,

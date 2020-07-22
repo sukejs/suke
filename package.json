@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "webpack-dev-server --progress --config ./config/webpack.config.js",
     "watch": "rollup -c -w",
-    "build": "concurrently \"rollup -c config/rollup.config.js\" \"npx rollup -c config/rollup-ie11.config.js\"",
+    "build": "concurrently \"rollup -c config/rollup.config.js\"",
     "test": "npx jest",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "lint": "npm run eslint && npm run prettier",
